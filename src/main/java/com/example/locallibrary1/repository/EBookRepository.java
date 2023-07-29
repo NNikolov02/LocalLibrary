@@ -15,5 +15,5 @@ public interface EBookRepository extends CrudRepository<EBook, UUID> {
     ArrayList<EBook> findByGenre(String genre);
 
 
-    //ArrayList<EBook> findByAuthorsEBooks(String author);
+    ArrayList<EBook> findByAuthorsEBooks(String author);
 }
