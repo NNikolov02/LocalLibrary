@@ -39,7 +39,11 @@ public class PaperBookService {
 
 
     public PaperBook save(PaperBook paperBook) {
-        return repo.save(paperBook);
+        paperBook = repo.save(paperBook);
+
+
+
+        return paperBook;
     }
 
     public PaperBook findTitle(String title) {
@@ -49,32 +53,14 @@ public class PaperBookService {
     public List<PaperBook> findGenre(String genre) {
         return repo.findByGenre(genre);
     }
-   // public List<PaperBook> findAuthor(String author) {
-        //return repo.findByAuthors(author);
-    //}
+    public List<PaperBook> findAuthor(String author) {
+        return repo.findByAuthorsName(author);
+    }
 
     public void deleteById(String paperBookId){
         repo.deleteById(UUID.fromString(paperBookId));
     }
 
-    public Set<UUID> setPaperBookAuthor(String paperBookId, Set<UUID> paperBookAuthorIds) {
-        PaperBook paperBook = repo.findById(UUID.fromString(paperBookId)).orElseThrow(() -> {
-            throw new NotFoundObjectException("PaperBook Not Found", PaperBook.class.getName(), paperBookId);
-        });
-
-        List<Author> allPaperBookAuthors =
-                (List<Author>) authorRepo.findAllById(paperBookAuthorIds);
-
-        paperBook.setAuthors(new HashSet<>(allPaperBookAuthors));
-        PaperBook savedPaperBook = repo.save(paperBook);
-
-        Set<UUID> allPaperBookAuthorIds = new HashSet<>();
-        for (Author author : savedPaperBook.getAuthors()) {
-            allPaperBookAuthorIds.add(author.getId());
-        }
-
-        return allPaperBookAuthorIds;
-    }
 
 
 

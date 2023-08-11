@@ -22,7 +22,4 @@ public class AuthorCreateRequest {
     @JsonProperty("date_of_death")
     private String dateOfDeath;
 
-
-    private Set<EBookDto> EBooks;
-    private Set<PaperBookDto> paperBooks;
 }

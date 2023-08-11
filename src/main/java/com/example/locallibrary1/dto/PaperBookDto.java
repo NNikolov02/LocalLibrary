@@ -15,6 +15,7 @@ public class PaperBookDto {
     private String summary;
 
     private String ISBN;
+    private String url;
 
     private  Integer numberOfCopies;
 

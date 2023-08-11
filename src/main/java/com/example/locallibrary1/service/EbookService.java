@@ -48,9 +48,9 @@ public class EbookService {
     public List<EBook> findGenre(String genre) {
         return repo.findByGenre(genre);
     }
-    //public List<EBook> findAuthors(String author) {
-       // return repo.findByAuthorsEBooks(author);
-   // }
+    public List<EBook> findAuthors(String author) {
+        return repo.findByAuthorsName(author);
+    }
 
     public void deleteById(String eBookId){
         repo.deleteById(UUID.fromString(eBookId));

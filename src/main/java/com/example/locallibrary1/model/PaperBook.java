@@ -1,6 +1,7 @@
 package com.example.locallibrary1.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,6 +31,9 @@ public class PaperBook {
     private String ISBN;
 
     private  Integer numberOfCopies;
+    private String url;
+
+
 
     private Integer totalNumber;
     private boolean isBorrowed;

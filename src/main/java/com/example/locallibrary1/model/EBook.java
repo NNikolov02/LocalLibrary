@@ -30,7 +30,12 @@ public class EBook {
 
     private String ISBN;
 
-    private String link;
+    private String linkForReading;
+    private String linkForDownloading;
+    private String url;
+    private  Integer numberOfCopies;
+
+    private Integer totalNumber;
 
     private boolean isAccessed;
 

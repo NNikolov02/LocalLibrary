@@ -19,15 +19,12 @@ public class PaperBookCreateRequest {
 
     private String ISBN;
 
-    private  Integer numberOfCopies;
+
+
+
 
     private Integer totalNumber;
     private boolean isBorrowed;
 
-
-    private Set<AuthorDto> authors;
-
-
-    private CustomerDto customer;
 
 }

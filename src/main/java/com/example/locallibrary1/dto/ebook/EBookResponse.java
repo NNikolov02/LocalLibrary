@@ -26,12 +26,19 @@ public class EBookResponse {
 
     private String ISBN;
 
-    private String link;
+
+    private  Integer numberOfCopies;
+
+    private Integer totalNumber;
+    private String url;
+
+
+
+    private String linkForReading;
+    private String linkForDownloading;
     private boolean isAccessed;
 
 
-    private Set<AuthorDto> authors;
+    private Set<String> authors;
 
-
-    private CustomerDto customer;
 }

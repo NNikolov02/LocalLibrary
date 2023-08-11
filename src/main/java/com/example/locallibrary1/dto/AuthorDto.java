@@ -19,6 +19,7 @@ public class AuthorDto {
 
     @JsonProperty("date_of_birth")
     private String dateOfBirth;
+    private String url;
 
     @JsonProperty("date_of_death")
     private String dateOfDeath;

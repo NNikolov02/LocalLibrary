@@ -19,12 +19,11 @@ public class EBookCreateRequest {
 
     private String ISBN;
 
-    private String link;
+    private String linkForReading;
+    private String linkForDownloading;
     private boolean isAccessed;
 
 
-    private Set<AuthorDto> authors;
+    private Integer totalNumber;
 
-
-    private CustomerDto customer;
 }

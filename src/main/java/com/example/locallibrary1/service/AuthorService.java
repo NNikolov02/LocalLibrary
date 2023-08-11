@@ -38,7 +38,11 @@ public class AuthorService {
     private PaperBookRepository paperBookRepo;
 
     public Author save(Author author){
-        return repo.save(author);
+        author = repo.save(author);
+
+
+        return author;
+
     }
 
 

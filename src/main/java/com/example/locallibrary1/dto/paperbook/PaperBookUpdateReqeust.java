@@ -25,10 +25,9 @@ public class PaperBookUpdateReqeust {
     private Integer totalNumber;
 
 
-    private Set<AuthorDto> authors;
 
 
-    private CustomerDto customer;
+
     private boolean isBorrowed;
 
 }

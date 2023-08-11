@@ -26,11 +26,11 @@ public class AuthorResponse {
 
     @JsonProperty("date_of_birth")
     private String dateOfBirth;
-
+    private String url;
     @JsonProperty("date_of_death")
     private String dateOfDeath;
 
 
-    private Set<EBookDto> EBooks;
-    private Set<PaperBookDto> paperBooks;
+    private Set<String> EBooks;
+    private Set<String> paperBooks;
 }

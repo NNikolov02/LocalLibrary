@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.UUID;
 
 @Data
-@Builder
 public class SetPaperBookRequest {
 
     @NotNull

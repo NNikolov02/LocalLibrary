@@ -17,7 +17,13 @@ public class EBookDto {
     private String summary;
 
     private String ISBN;
+    private  Integer numberOfCopies;
 
-    private String link;
+    private Integer totalNumber;
+    private String url;
+
+
+    private String linkForReading;
+    private String linkForDownloading;
     private boolean isAccessed;
 }

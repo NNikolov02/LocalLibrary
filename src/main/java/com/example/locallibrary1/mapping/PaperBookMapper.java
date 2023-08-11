@@ -7,6 +7,7 @@ import com.example.locallibrary1.dto.customer.CustomerUpdateRequest;
 import com.example.locallibrary1.dto.paperbook.PaperBookCreateRequest;
 import com.example.locallibrary1.dto.paperbook.PaperBookResponse;
 import com.example.locallibrary1.dto.paperbook.PaperBookUpdateReqeust;
+import com.example.locallibrary1.model.Author;
 import com.example.locallibrary1.model.Customer;
 import com.example.locallibrary1.model.PaperBook;
 import org.mapstruct.Mapper;
@@ -22,25 +23,27 @@ import java.util.List;
 @Mapper(uses = {AuthorMapperDto.class, CustomerMapperDto.class})
 public interface PaperBookMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "authors",  ignore = true)
-    @Mapping(target = "customer", ignore = true)
     PaperBook modelFromCreateRequest(PaperBookCreateRequest paperBookCreateDto);
 
     PaperBookResponse responseFromModelOne(PaperBook paperBook);
     List<PaperBookResponse> responseFromModelList(List<PaperBook> paperBooks);
 
-    @Mapping(target = "authors",  ignore = true)
-    @Mapping(target = "customer", ignore = true)
+
     @Mapping(target = "title",nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "genre",nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "summary", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "ISBN", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "numberOfCopies", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "totalNumber", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateModelFromDto(PaperBookUpdateReqeust paperBookUpdateDto, @MappingTarget PaperBook paperBook);
-    List<PaperBookResponse> listOfModelToListOfDto(List<PaperBook> paperBooks);
 
-    List<PaperBookResponse> listOfModelToListOfDto(Iterable<PaperBook> all);
+    public static String authorUrlFromPaperBook(Author author){
 
+
+        if(author != null){
+
+            return "http://localhost:8084/library/authors/" + author.getId();
+
+        }
+
+        return null;
+    }
 }

@@ -7,6 +7,7 @@ import com.example.locallibrary1.dto.ebook.EBookUpdateRequest;
 import com.example.locallibrary1.dto.paperbook.PaperBookCreateRequest;
 import com.example.locallibrary1.dto.paperbook.PaperBookResponse;
 import com.example.locallibrary1.dto.paperbook.PaperBookUpdateReqeust;
+import com.example.locallibrary1.model.Author;
 import com.example.locallibrary1.model.EBook;
 import com.example.locallibrary1.model.PaperBook;
 import org.mapstruct.Mapper;
@@ -22,24 +23,32 @@ import java.util.List;
 @Mapper(uses = {AuthorMapperDto.class, CustomerMapperDto.class})
 public interface EBookMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "authors",  ignore = true)
-    @Mapping(target = "customer", ignore = true)
+
     EBook modelFromCreateRequest(EBookCreateRequest eBookCreateDto);
 
     EBookResponse responseFromModelOne(EBook eBook);
     List< EBookResponse> responseFromModelList(List<EBook> paperBooks);
 
-    @Mapping(target = "authors",  ignore = true)
-    @Mapping(target = "customer", ignore = true)
+
     @Mapping(target = "title",nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "genre",nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "summary", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "ISBN", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "link", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "linkForReading", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "linkForDownloading", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateModelFromDto(EBookUpdateRequest eBookUpdateDto, @MappingTarget EBook eBook);
 
-    List<EBookResponse> listOfModelToListOfDto(List<EBook> eBooks);
 
-    List<EBookResponse> listOfModelToListOfDto(Iterable<EBook> all);
+    public static String authorUrlFromEbook(Author author){
+
+
+        if(author != null){
+
+            return "http://localhost:8084/library/authors/" + author.getId();
+
+        }
+
+        return null;
+    }
+
 }

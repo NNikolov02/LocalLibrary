@@ -28,11 +28,11 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AuthorController {
 
-   @Autowired
-   private AuthorMapper authorMapper;
+    @Autowired
+    private AuthorMapper authorMapper;
 
-   @Autowired
-   private AuthorService authorService;
+    @Autowired
+    private AuthorService authorService;
 
     @Autowired
     private ObjectValidator validator;
@@ -42,11 +42,14 @@ public class AuthorController {
 
     @GetMapping(name = "", produces = "application/json")
     public AuthorApiPage<AuthorResponse> getAllAuthors(
-            @RequestParam(required = false, defaultValue = "0") Integer currPage) {
+            @RequestParam(required = false, defaultValue = "1") Integer currPage) {
 
 
-        Page<AuthorResponse> authorPage =authorService.fetchAll(currPage, Page_Size)
-                .map(authorMapper::responseFromModel);
+        Page<AuthorResponse> authorPage = authorService.fetchAll(currPage - 1, 10).map(authorMapper::responseFromModel);
+
+        for (AuthorResponse response : authorPage){
+            response.setUrl("http://localhost:8084/library/authors/" + response.getId());
+        }
 
         return new AuthorApiPage<>(authorPage);
     }
@@ -114,7 +117,6 @@ public class AuthorController {
 
         return result;
     }
-
 
 
 }

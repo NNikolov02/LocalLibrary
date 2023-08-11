@@ -19,12 +19,16 @@ public class EBookUpdateRequest {
 
     private String ISBN;
 
-    private String link;
 
 
-    private Set<AuthorDto> authors;
+
+    private Integer totalNumber;
+    private String linkForReading;
+    private String linkForDownloading;
 
 
-    private CustomerDto customer;
+
+
+
     private boolean isAccessed;
 }

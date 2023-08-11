@@ -29,16 +29,14 @@ public class PaperBookResponse {
     private String ISBN;
 
     private  Integer numberOfCopies;
+    private String url;
 
     private Integer totalNumber;
+
+
     private boolean isBorrowed;
 
 
-    private Set<AuthorDto> authors;
-
-
-    private CustomerDto customer;
-
-
+    private Set<String> authors;
 
 }

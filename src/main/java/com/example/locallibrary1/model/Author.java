@@ -32,6 +32,8 @@ public class Author {
     @JsonProperty("date_of_death")
     private String dateOfDeath;
 
+    private String url;
+
 
     @ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("authors")
@@ -39,6 +41,7 @@ public class Author {
     @ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("authors")
     private Set<PaperBook> paperBooks;
+
 
 
 }

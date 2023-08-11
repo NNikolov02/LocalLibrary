@@ -34,17 +34,18 @@ public class PaperBookController {
     private ObjectValidator validator;
 
 
-    private final Integer Page_Size = 10;
 
     @GetMapping(name = "", produces = "application/json")
     public PaperBookApiPage<PaperBookResponse> getAllPaperBooks(
-            @RequestParam(required = false, defaultValue = "0") Integer currPage) {
+            @RequestParam(required = false, defaultValue = "1") Integer currPage) {
 
-        // Update the method to use Page<PaperBookResponse> instead of Page<PaperBook>
-        Page<PaperBookResponse> paperBooksPage = paperBookService.fetchAll(currPage, Page_Size)
-                .map(paperBookMapper::responseFromModelOne);
+        Page<PaperBookResponse> paperBookPage = paperBookService.fetchAll(currPage - 1, 10).map(paperBookMapper::responseFromModelOne);
 
-        return new PaperBookApiPage<>(paperBooksPage);
+        for (PaperBookResponse response : paperBookPage){
+            response.setUrl("http://localhost:8084/library/paperBooks/" + response.getId());
+        }
+
+        return new PaperBookApiPage<>(paperBookPage);
     }
 
     @GetMapping(value ="/title/{paperBookTitle}")
@@ -70,18 +71,18 @@ public class PaperBookController {
 
     }
 
-    //@GetMapping(value ="{paperBookAuthor}")
-   // public ResponseEntity<List<PaperBookResponse>> findByAuthor(@PathVariable String paperBookAuthor){
+    @GetMapping(value ="{paperBookAuthor}")
+    public ResponseEntity<List<PaperBookResponse>> findByAuthor(@PathVariable String paperBookAuthor){
 
-       // List<PaperBook> paperBooks = paperBookService.findAuthor(paperBookAuthor);
-        //for(PaperBook paperBook:paperBooks){
-           // if (paperBook == null) {
-              //  return ResponseEntity.notFound().build();
-            //}
-        //}
-       // return ResponseEntity.ok(paperBookMapper.responseFromModelList(paperBooks));
+        List<PaperBook> paperBooks = paperBookService.findAuthor(paperBookAuthor);
+        for(PaperBook paperBook:paperBooks){
+            if (paperBook == null) {
+                return ResponseEntity.notFound().build();
+            }
+        }
+        return ResponseEntity.ok(paperBookMapper.responseFromModelList(paperBooks));
 
-   // }
+    }
     @GetMapping(value ="{paperBookId}")
     public ResponseEntity<PaperBookResponse>findById(@PathVariable String paperBookId){
 
@@ -130,15 +131,7 @@ public class PaperBookController {
 
     }
 
-    @PutMapping(value = "/{paperBookId}/authors")
-    public PaperBookAuthorResponse setAllPaperBooksAuthors(@PathVariable String paperBookId, @RequestBody SetAuthorRequest authors) {
 
-        Set<UUID> paperBooksAuthors = paperBookService.setPaperBookAuthor(paperBookId,authors.getSetAuthors());
-
-        PaperBookAuthorResponse result = PaperBookAuthorResponse.builder().PaperBookAuthorIds(paperBooksAuthors).build();
-
-        return result;
-    }
 
 
 
