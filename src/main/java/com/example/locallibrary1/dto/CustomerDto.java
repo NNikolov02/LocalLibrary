@@ -19,5 +19,6 @@ public class CustomerDto {
     private String city;
     private String country;
     private String email;
+    private String url;
 
 }

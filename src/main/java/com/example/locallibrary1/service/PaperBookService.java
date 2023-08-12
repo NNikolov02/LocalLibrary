@@ -2,6 +2,7 @@ package com.example.locallibrary1.service;
 
 import com.example.locallibrary1.error.NotFoundObjectException;
 import com.example.locallibrary1.model.Author;
+import com.example.locallibrary1.model.EBook;
 import com.example.locallibrary1.model.PaperBook;
 import com.example.locallibrary1.repository.AuthorRepository;
 import com.example.locallibrary1.repository.PaperBookPagingRepository;
@@ -61,7 +62,24 @@ public class PaperBookService {
         repo.deleteById(UUID.fromString(paperBookId));
     }
 
+    public Set<UUID> setPaperBookAuthor(String paperBookId, Set<UUID> paperBookAuthorIds) {
+        PaperBook paperBook = repo.findById(UUID.fromString(paperBookId)).orElseThrow(() -> {
+            throw new NotFoundObjectException("PaperBook Not Found", EBook.class.getName(), paperBookId);
+        });
 
+        List<Author> allEbookAuthors =
+                (List<Author>) authorRepo.findAllById(paperBookAuthorIds);
+
+        paperBook.setAuthors(new HashSet<>(allEbookAuthors));
+        PaperBook savedpaperBook= repo.save(paperBook);
+
+        Set<UUID> allPaperBookAuthorIds = new HashSet<>();
+        for (Author author : savedpaperBook.getAuthors()) {
+            allPaperBookAuthorIds.add(author.getId());
+        }
+
+        return allPaperBookAuthorIds;
+    }
 
 
 

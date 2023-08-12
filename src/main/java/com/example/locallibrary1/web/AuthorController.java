@@ -48,7 +48,7 @@ public class AuthorController {
         Page<AuthorResponse> authorPage = authorService.fetchAll(currPage - 1, 10).map(authorMapper::responseFromModel);
 
         for (AuthorResponse response : authorPage){
-            response.setUrl("http://localhost:8084/library/authors/" + response.getId());
+            response.setUrl("http://localhost:8084/library/authors/name/" + response.getName());
         }
 
         return new AuthorApiPage<>(authorPage);
@@ -58,7 +58,23 @@ public class AuthorController {
     public ResponseEntity<AuthorResponse> findAuthor(@PathVariable String authorId){
         Author author = authorService.findById(authorId);
 
-        return ResponseEntity.ok(authorMapper.responseFromModel(author));
+        AuthorResponse authorResponse = authorMapper.responseFromModel(author);
+        authorResponse.setUrl("http://localhost:8084/library/authors/name/" + authorResponse.getName());
+
+        return ResponseEntity.ok().body(authorResponse);
+    }
+    @GetMapping("/name/{authorName}")
+    public ResponseEntity<AuthorResponse>searchByAuthorsName(@PathVariable String authorName){
+        Author author = authorService.searchAuthorName(authorName);
+        if (author == null) {
+            return ResponseEntity.notFound().build();
+        }
+        AuthorResponse authorResponse = authorMapper.responseFromModel(author);
+        authorResponse.setUrl("http://localhost:8084/library/authors/name/" + authorResponse.getName());
+
+        return ResponseEntity.ok().body(authorResponse);
+
+
     }
     @DeleteMapping("/{authorId}")
     public void deleteById(@PathVariable String authorId){
@@ -98,25 +114,25 @@ public class AuthorController {
 
     }
 
-    @PutMapping(value = "/{authorId}/paperBooks")
-    public AuthorPaperBookResponse setAuthorsPaperBooks(@PathVariable String authorId, @RequestBody SetPaperBookRequest paperBooks) {
+    //@PutMapping(value = "/{authorId}/paperBooks")
+   // public AuthorPaperBookResponse setAuthorsPaperBooks(@PathVariable String authorId, @RequestBody SetPaperBookRequest paperBooks) {
 
-        Set<UUID> authorsPaperBooks = authorService.setAuthorsPaperBooks(authorId,paperBooks.getSetPaperBooks());
+       // Set<UUID> authorsPaperBooks = authorService.setAuthorsPaperBooks(authorId,paperBooks.getSetPaperBooks());
 
-        AuthorPaperBookResponse result = AuthorPaperBookResponse.builder().AuthorPaperBookIds(authorsPaperBooks).build();
+        //AuthorPaperBookResponse result = AuthorPaperBookResponse.builder().AuthorPaperBookIds(authorsPaperBooks).build();
 
-        return result;
-    }
+       // return result;
+    //}
 
-    @PutMapping(value = "/{authorId}/eBooks")
-    public AuthorEBookResponse setAuthorsEbooks(@PathVariable String authorId, @RequestBody SetEBookRequest eBooks) {
+    //@PutMapping(value = "/{authorId}/eBooks")
+    //public AuthorEBookResponse setAuthorsEbooks(@PathVariable String authorId, @RequestBody SetEBookRequest eBooks) {
 
-        Set<UUID> authorsEbooks = authorService.setAuthorsEbooks(authorId,eBooks.getSetEBooks());
+        //Set<UUID> authorsEbooks = authorService.setAuthorsEbooks(authorId,eBooks.getSetEBooks());
 
-        AuthorEBookResponse result = AuthorEBookResponse.builder().AuthorEBookIds(authorsEbooks).build();
+       // AuthorEBookResponse result = AuthorEBookResponse.builder().AuthorEBookIds(authorsEbooks).build();
 
-        return result;
-    }
+       // return result;
+    //}
 
 
 }

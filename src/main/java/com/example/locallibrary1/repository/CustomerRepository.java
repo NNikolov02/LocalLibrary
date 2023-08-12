@@ -11,6 +11,9 @@ import java.util.UUID;
 
 @Repository
 public interface CustomerRepository extends CrudRepository<Customer, UUID> {
+
+    Customer findCustomerByEmail(String email);
+    void deleteAllByEmail(String email);
     //default ArrayList<Customer> borrow(PaperBook paperBook){
 
        // if (!paperBook.isBorrowed())// {

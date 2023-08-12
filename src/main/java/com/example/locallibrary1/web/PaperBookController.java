@@ -2,6 +2,7 @@ package com.example.locallibrary1.web;
 
 
 import com.example.locallibrary1.dto.author.SetAuthorRequest;
+import com.example.locallibrary1.dto.ebook.EBookAuthorResponse;
 import com.example.locallibrary1.dto.paperbook.*;
 import com.example.locallibrary1.error.InvalidObjectException;
 import com.example.locallibrary1.mapping.PaperBookMapper;
@@ -38,11 +39,14 @@ public class PaperBookController {
     @GetMapping(name = "", produces = "application/json")
     public PaperBookApiPage<PaperBookResponse> getAllPaperBooks(
             @RequestParam(required = false, defaultValue = "1") Integer currPage) {
+        int totalNumber = 0;
 
         Page<PaperBookResponse> paperBookPage = paperBookService.fetchAll(currPage - 1, 10).map(paperBookMapper::responseFromModelOne);
 
         for (PaperBookResponse response : paperBookPage){
             response.setUrl("http://localhost:8084/library/paperBooks/" + response.getId());
+            response.setTotalNumber(totalNumber);
+            totalNumber++;
         }
 
         return new PaperBookApiPage<>(paperBookPage);
@@ -56,7 +60,12 @@ public class PaperBookController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(paperBookMapper.responseFromModelOne(paperBook));
+        PaperBookResponse paperBookResponse = paperBookMapper.responseFromModelOne(paperBook);
+        paperBookResponse.setUrl("http://localhost:8084/library/paperBooks/" + paperBookResponse.getId());
+
+
+
+        return ResponseEntity.ok().body(paperBookResponse);
     }
 
     @GetMapping(value ="/genre/{paperBookGenre}")
@@ -67,11 +76,16 @@ public class PaperBookController {
                 return ResponseEntity.notFound().build();
             }
         }
-        return ResponseEntity.ok(paperBookMapper.responseFromModelList(paperBooks));
+        List<PaperBookResponse> paperBookResponse = paperBookMapper.responseFromModelList(paperBooks);
+
+        for (PaperBookResponse response : paperBookResponse){
+            response.setUrl("http://localhost:8084/library/paperBooks/" + response.getId());
+        }
+        return ResponseEntity.ok().body(paperBookResponse);
 
     }
 
-    @GetMapping(value ="{paperBookAuthor}")
+    @GetMapping(value ="/author/{paperBookAuthor}")
     public ResponseEntity<List<PaperBookResponse>> findByAuthor(@PathVariable String paperBookAuthor){
 
         List<PaperBook> paperBooks = paperBookService.findAuthor(paperBookAuthor);
@@ -80,7 +94,12 @@ public class PaperBookController {
                 return ResponseEntity.notFound().build();
             }
         }
-        return ResponseEntity.ok(paperBookMapper.responseFromModelList(paperBooks));
+        List<PaperBookResponse> paperBookResponse = paperBookMapper.responseFromModelList(paperBooks);
+
+        for (PaperBookResponse response : paperBookResponse){
+            response.setUrl("http://localhost:8084/library/paperBooks/" + response.getId());
+        }
+        return ResponseEntity.ok().body(paperBookResponse);
 
     }
     @GetMapping(value ="{paperBookId}")
@@ -88,7 +107,12 @@ public class PaperBookController {
 
         PaperBook paperBook = paperBookService.findById(paperBookId);
 
-        return ResponseEntity.ok(paperBookMapper.responseFromModelOne(paperBook));
+        PaperBookResponse paperBookResponse = paperBookMapper.responseFromModelOne(paperBook);
+        paperBookResponse.setUrl("http://localhost:8084/library/paperBooks/" + paperBookResponse.getId());
+
+
+
+        return ResponseEntity.ok().body(paperBookResponse);
     }
 
     @DeleteMapping(value ="{paperBookId}")
@@ -129,6 +153,16 @@ public class PaperBookController {
 
         return  ResponseEntity.status(200).body(paperBookResponse);
 
+    }
+
+    @PutMapping(value = "/{paperBookId}/authors")
+    public PaperBookAuthorResponse setAllPaperBooksAuthors(@PathVariable String paperBookId, @RequestBody SetAuthorRequest authors) {
+
+        Set<UUID>paperBooksAuthors = paperBookService.setPaperBookAuthor(paperBookId,authors.getSetAuthors());
+
+        PaperBookAuthorResponse result =  PaperBookAuthorResponse.builder().PaperBookAuthorIds(paperBooksAuthors).build();
+
+        return result;
     }
 
 

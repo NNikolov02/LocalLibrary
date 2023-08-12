@@ -31,6 +31,6 @@ public class AuthorResponse {
     private String dateOfDeath;
 
 
-    private Set<String> EBooks;
-    private Set<String> paperBooks;
+
+
 }

@@ -35,12 +35,12 @@ public class Author {
     private String url;
 
 
-    @ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("authors")
-    private Set<EBook> EBooks;
-    @ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("authors")
-    private Set<PaperBook> paperBooks;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "eBook_id")
+    private EBook EBook;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "paperBook_id")
+    private PaperBook paperBooks;
 
 
 

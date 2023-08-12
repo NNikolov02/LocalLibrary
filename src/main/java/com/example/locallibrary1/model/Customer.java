@@ -29,6 +29,7 @@ public class Customer {
     private String city;
     private String country;
     private String email;
+    private String url;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id_paperbook") // Specify a unique name for the join column
@@ -38,7 +39,7 @@ public class Customer {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id_ebook") // Specify a unique name for the join column
     @JsonIgnoreProperties("customer")
-    private Set<EBook> eBook;
+    private Set<EBook> eBooks;
 
 
 }

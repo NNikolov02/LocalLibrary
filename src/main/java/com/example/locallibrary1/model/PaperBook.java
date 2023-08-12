@@ -36,14 +36,12 @@ public class PaperBook {
 
 
     private Integer totalNumber;
+
     private boolean isBorrowed;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "paperbook_author",
-            joinColumns = @JoinColumn(name = "paperbook_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id"))
-    @JsonIgnoreProperties("paperbook")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "paperBook_id_author") // Specify a unique name for the join column
+    @JsonIgnoreProperties("paperBook")
     private Set<Author> authors;
 
     @ManyToOne(fetch = FetchType.LAZY)

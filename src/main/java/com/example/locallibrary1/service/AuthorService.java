@@ -49,6 +49,9 @@ public class AuthorService {
     public Page<Author> fetchAll(int currentPage, int pageSize) {
         return pagingRepo.findAll(PageRequest.of(currentPage, pageSize));
     }
+    public Author searchAuthorName(String authorName) {
+        return repo.searchAuthorByName(authorName);
+    }
 
     public Author findById(String authorId) {
         return repo.findById(UUID.fromString(authorId)).orElseThrow(() -> {
@@ -61,41 +64,41 @@ public class AuthorService {
     }
 
 
-    public Set<UUID> setAuthorsEbooks(String authorId, Set<UUID> authorEbookIds) {
-        Author author = repo.findById(UUID.fromString(authorId)).orElseThrow(() -> {
-            throw new NotFoundObjectException("Author Not Found", EBook.class.getName(), authorId);
-        });
+    //public Set<UUID> setAuthorsEbooks(String authorId, Set<UUID> authorEbookIds) {
+        //Author author = repo.findById(UUID.fromString(authorId)).orElseThrow(() -> {
+            //throw new NotFoundObjectException("Author Not Found", EBook.class.getName(), authorId);
+        //});
 
-        List<EBook> allAuthorEbooks =
-                (List<EBook>) eBookRepo.findAllById(authorEbookIds);
+       //List<EBook> allAuthorEbooks =
+                //(List<EBook>) eBookRepo.findAllById(authorEbookIds);
 
-        author.setEBooks(new HashSet<>(allAuthorEbooks));
-        Author savedAuthor = repo.save(author);
+        //author.setEBooks(new HashSet<>(allAuthorEbooks));
+        //Author savedAuthor = repo.save(author);
 
-        Set<UUID> allEbookAuthorIds = new HashSet<>();
-        for (EBook eBook : savedAuthor.getEBooks()) {
-            allEbookAuthorIds.add(eBook.getId());
-        }
+        //Set<UUID> allEbookAuthorIds = new HashSet<>();
+        //for (EBook eBook : savedAuthor.getEBooks()) {
+            //allEbookAuthorIds.add(eBook.getId());
+       //}
 
-        return allEbookAuthorIds;
-    }
+        //return allEbookAuthorIds;
+    //}
 
-    public Set<UUID> setAuthorsPaperBooks(String authorId, Set<UUID> authorPaperBooksIds) {
-        Author author = repo.findById(UUID.fromString(authorId)).orElseThrow(() -> {
-            throw new NotFoundObjectException("Author Not Found", EBook.class.getName(), authorId);
-        });
+    //public Set<UUID> setAuthorsPaperBooks(String authorId, Set<UUID> authorPaperBooksIds) {
+       // Author author = repo.findById(UUID.fromString(authorId)).orElseThrow(() -> {
+            //throw new NotFoundObjectException("Author Not Found", EBook.class.getName(), authorId);
+        //});
 
-        List<PaperBook> allAuthorPaperBooks =
-                (List<PaperBook>) paperBookRepo.findAllById(authorPaperBooksIds);
+        //List<PaperBook> allAuthorPaperBooks =
+                //(List<PaperBook>) paperBookRepo.findAllById(authorPaperBooksIds);
 
-        author.setPaperBooks(new HashSet<>(allAuthorPaperBooks));
-        Author savedAuthor = repo.save(author);
+        //author.setPaperBooks(new HashSet<>(allAuthorPaperBooks));
+        //Author savedAuthor = repo.save(author);
 
-        Set<UUID> allPaperBooksAuthorIds = new HashSet<>();
-        for (PaperBook paperBook : savedAuthor.getPaperBooks()) {
-            allPaperBooksAuthorIds.add(paperBook.getId());
-        }
+        //Set<UUID> allPaperBooksAuthorIds = new HashSet<>();
+        //for (PaperBook paperBook : savedAuthor.getPaperBooks()) {
+            //allPaperBooksAuthorIds.add(paperBook.getId());
+        //}
 
-        return allPaperBooksAuthorIds;
-    }
+        //return allPaperBooksAuthorIds;
+    //}
 }

@@ -22,10 +22,7 @@ public class CustomerUpdateRequest {
     private String email;
 
 
-    private Set<PaperBookDto> paperBooks;
 
-
-    private Set<EBookDto> eBooks;
 
 
 }

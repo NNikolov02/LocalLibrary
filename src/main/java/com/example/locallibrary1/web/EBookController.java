@@ -51,18 +51,22 @@ public class EBookController {
 
     }
 
-    @GetMapping(value ="/{eBookTitle}")
+    @GetMapping(value ="/title/{eBookTitle}")
     public ResponseEntity<EBookResponse>findByTitle(@PathVariable String eBookTitle){
 
         EBook eBook = ebookService.findTitle(eBookTitle);
         if (eBook == null) {
             return ResponseEntity.notFound().build();
         }
+        EBookResponse eBookResponse = eBookMapper.responseFromModelOne(eBook);
+        eBookResponse.setUrl("http://localhost:8084/library/eBooks/" + eBookResponse.getId());
 
-        return ResponseEntity.ok(eBookMapper.responseFromModelOne(eBook));
+
+
+        return ResponseEntity.ok().body(eBookResponse);
     }
     ////////////
-    @GetMapping(value ="{eBookGenre}")
+    @GetMapping(value ="/genre/{eBookGenre}")
     public ResponseEntity<List<EBookResponse>> findByGenre(@PathVariable String eBookGenre){
         List<EBook> eBooks = ebookService.findGenre(eBookGenre);
         for(EBook eBook:eBooks){
@@ -70,11 +74,19 @@ public class EBookController {
                 return ResponseEntity.notFound().build();
             }
         }
-        return ResponseEntity.ok(eBookMapper.responseFromModelList(eBooks));
+        List<EBookResponse> eBookResponses = eBookMapper.responseFromModelList(eBooks);
+        for (EBookResponse response :  eBookResponses){
+            response.setUrl("http://localhost:8084/library/eBooks/" + response.getId());
+        }
+
+
+
+        return ResponseEntity.ok().body(eBookResponses);
+
 
     }
 
-    @GetMapping(value ="{eBookAuthor}")
+    @GetMapping(value ="/author/{eBookAuthor}")
     public ResponseEntity<List<EBookResponse>> findByAuthor(@PathVariable String eBookAuthor){
 
         List<EBook> eBooks =ebookService.findAuthors(eBookAuthor);
@@ -83,7 +95,15 @@ public class EBookController {
                 return ResponseEntity.notFound().build();
             }
         }
-        return ResponseEntity.ok(eBookMapper.responseFromModelList(eBooks));
+
+        List<EBookResponse> eBookResponses = eBookMapper.responseFromModelList(eBooks);
+        for (EBookResponse response :  eBookResponses){
+            response.setUrl("http://localhost:8084/library/eBooks/" + response.getId());
+        }
+
+
+
+        return ResponseEntity.ok().body(eBookResponses);
 
     }
     @GetMapping(value ="{eBookId}")
@@ -91,7 +111,12 @@ public class EBookController {
 
         EBook eBook =ebookService.findById(eBookId);
 
-        return ResponseEntity.ok(eBookMapper.responseFromModelOne(eBook));
+        EBookResponse eBookResponse = eBookMapper.responseFromModelOne(eBook);
+        eBookResponse.setUrl("http://localhost:8084/library/eBooks/" + eBookResponse.getId());
+
+
+
+        return ResponseEntity.ok().body(eBookResponse);
     }
 
     @DeleteMapping(value ="{eBookId}")

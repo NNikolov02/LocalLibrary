@@ -29,12 +29,9 @@ public class CustomerResponse {
     private String city;
     private String country;
     private String email;
+    private  String url;
 
 
-    private Set<PaperBookDto> paperBooks;
-
-
-    private Set<EBookDto> eBooks;
 
 
 }

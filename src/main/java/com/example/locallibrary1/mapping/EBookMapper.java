@@ -44,7 +44,7 @@ public interface EBookMapper {
 
         if(author != null){
 
-            return "http://localhost:8084/library/authors/" + author.getId();
+            return "http://localhost:8084/library/authors/name/" + author.getName();
 
         }
 

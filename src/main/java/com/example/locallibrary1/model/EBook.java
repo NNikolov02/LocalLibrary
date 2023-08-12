@@ -37,14 +37,13 @@ public class EBook {
 
     private Integer totalNumber;
 
+
+
     private boolean isAccessed;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "EBook_author",
-            joinColumns = @JoinColumn(name = "EBook_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id"))
-    @JsonIgnoreProperties("EBook")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "eBook_id_author") // Specify a unique name for the join column
+    @JsonIgnoreProperties("eBook")
     private Set<Author> authors;
 
 
