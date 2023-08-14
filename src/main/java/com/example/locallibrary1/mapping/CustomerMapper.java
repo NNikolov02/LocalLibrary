@@ -34,7 +34,6 @@ public interface CustomerMapper {
     @Mapping(target = "address", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "city", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "email", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "url", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateModelFromDto(CustomerUpdateRequest customerUpdateDto, @MappingTarget Customer customer);
 
     public static String eBooksUrlFromCustomer(EBook eBook){
