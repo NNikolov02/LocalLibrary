@@ -18,6 +18,7 @@ public class EBookCreateRequest {
     private String summary;
 
     private String ISBN;
+    private  Integer numberOfCopies;
 
     private String linkForReading;
     private String linkForDownloading;

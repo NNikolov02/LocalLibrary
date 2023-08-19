@@ -50,5 +50,8 @@ public class EBook {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
+    @OneToOne(mappedBy = "EBook")
+    @JsonIgnoreProperties("EBook")
+    private BorrowingHistory borrowHistory;
 
 }

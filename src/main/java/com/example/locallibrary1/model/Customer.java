@@ -40,6 +40,11 @@ public class Customer {
     @JoinColumn(name = "customer_id_ebook") // Specify a unique name for the join column
     @JsonIgnoreProperties("customer")
     private Set<EBook> eBooks;
-
-
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "verification_token_id")
+    @JsonIgnoreProperties("customer")
+    private VerificationToken verificationToken;
+    @OneToOne(mappedBy = "customer")
+    @JsonIgnoreProperties("customer")
+    private BorrowingHistory borrowHistory;
 }

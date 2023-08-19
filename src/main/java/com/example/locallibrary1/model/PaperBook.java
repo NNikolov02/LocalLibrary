@@ -48,6 +48,8 @@ public class PaperBook {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-
+    @OneToOne(mappedBy = "PaperBook")
+    @JsonIgnoreProperties("PaperBook")
+    private BorrowingHistory borrowHistory;
 
 }

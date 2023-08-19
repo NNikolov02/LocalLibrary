@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -14,6 +15,7 @@ public interface CustomerRepository extends CrudRepository<Customer, UUID> {
 
     Customer findCustomerByEmail(String email);
     void deleteAllByEmail(String email);
+    Optional<Customer> findByEmail(String email);
     //default ArrayList<Customer> borrow(PaperBook paperBook){
 
        // if (!paperBook.isBorrowed())// {

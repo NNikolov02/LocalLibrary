@@ -1,20 +1,23 @@
 package com.example.locallibrary1.service;
 
+import com.example.locallibrary1.dto.CustomerDto1;
+import com.example.locallibrary1.dto.customer.CustomerCreateRequest;
 import com.example.locallibrary1.dto.customer.CustomerResponse;
+import com.example.locallibrary1.error.CustomerAlreadyExistException;
 import com.example.locallibrary1.error.NotFoundObjectException;
 import com.example.locallibrary1.model.Customer;
 import com.example.locallibrary1.model.EBook;
 import com.example.locallibrary1.model.PaperBook;
-import com.example.locallibrary1.repository.CustomerPagingRepository;
-import com.example.locallibrary1.repository.CustomerRepository;
-import com.example.locallibrary1.repository.EBookRepository;
-import com.example.locallibrary1.repository.PaperBookRepository;
+import com.example.locallibrary1.model.VerificationToken;
+import com.example.locallibrary1.registration.EmailPatternBuilder;
+import com.example.locallibrary1.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @Component
@@ -32,6 +35,10 @@ public class CustomerService {
 
     @Autowired
     private PaperBookRepository paperBookRepo;
+    @Autowired
+    private VerificationTokenRepository verificationTokenRepository;
+    @Autowired
+    private EmailService emailService;
 
 
     public Customer save(Customer customer){
@@ -72,6 +79,46 @@ public class CustomerService {
 
         return allEbookCustomerIds;
     }
+    public Customer registerNewCustomerAccount(CustomerCreateRequest customerDto)  {
+
+
+        Customer customer = Customer.builder()
+                .name(customerDto.getName())
+                .country(customerDto.getCountry())
+                .email(customerDto.getEmail())
+                .build();
+
+        Customer savedCustomer = repo.save(customer);
+
+        // Create a verification token and associate it with the customer
+        String token = UUID.randomUUID().toString();
+        VerificationToken verificationToken = VerificationToken.builder()
+                .token(token)
+                .customer(savedCustomer)
+                .expiryDate(calculateExpiryDate(24 * 60)) // 24 hours expiration
+                .build();
+        emailService.sendSimpleMessage(customerDto.getEmail(),"Email Verification", EmailPatternBuilder.buildEmail("http://localhost:8084/library/customers/registration-success?" + verificationToken));
+
+        verificationTokenRepository.save(verificationToken);
+
+        return savedCustomer;
+    }
+    public void createVerificationToken(Customer customer, String token) {
+        System.out.println("Creating verification token for customer: " + customer.getName());
+        System.out.println("Token: " + token);
+    }
+
+    private boolean emailExists(String email) {
+        return repo.findByEmail(email).isPresent();
+    }
+
+    private Date calculateExpiryDate(int expiryTimeInMinutes) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Timestamp(cal.getTime().getTime()));
+        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
+        return new Date(cal.getTime().getTime());
+    }
+
 
     public Set<UUID> setCustomersPaperBooks(String customerId, Set<UUID> customerPaperBooksIds) {
         Customer customer = repo.findById(UUID.fromString(customerId)).orElseThrow(() -> {
