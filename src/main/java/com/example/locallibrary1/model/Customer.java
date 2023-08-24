@@ -44,7 +44,7 @@ public class Customer {
     @JoinColumn(name = "verification_token_id")
     @JsonIgnoreProperties("customer")
     private VerificationToken verificationToken;
-    @OneToOne(mappedBy = "customer")
-    @JsonIgnoreProperties("customer")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "borrowHistory_id")
     private BorrowingHistory borrowHistory;
 }

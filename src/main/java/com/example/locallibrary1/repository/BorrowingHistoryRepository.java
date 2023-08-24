@@ -11,6 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface BorrowingHistoryRepository extends CrudRepository<BorrowingHistory, UUID> {
-    BorrowingHistory findByCustomerAndEBookAndReturnDateIsNull(Customer customer, EBook eBook);
+  //  BorrowingHistory findByCustomerAndEBookAndReturnDateIsNull(Customer customer, EBook eBook);
     //BorrowingHistory findByCustomerAndPaperBookAndReturnDateIsNull(Customer customer, PaperBook paperBook);
 }

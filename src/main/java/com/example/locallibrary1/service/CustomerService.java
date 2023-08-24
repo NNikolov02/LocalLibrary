@@ -1,9 +1,6 @@
 package com.example.locallibrary1.service;
 
-import com.example.locallibrary1.dto.CustomerDto1;
 import com.example.locallibrary1.dto.customer.CustomerCreateRequest;
-import com.example.locallibrary1.dto.customer.CustomerResponse;
-import com.example.locallibrary1.error.CustomerAlreadyExistException;
 import com.example.locallibrary1.error.NotFoundObjectException;
 import com.example.locallibrary1.model.Customer;
 import com.example.locallibrary1.model.EBook;
@@ -16,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -58,8 +56,15 @@ public class CustomerService {
             throw new NotFoundObjectException("Customer Not Found", EBook.class.getName(), customerId);
         });
     }
-    public void deleteByEmail(String email){
-        repo.deleteAllByEmail(email);
+    @Transactional
+    public boolean deleteByEmail(String email){
+        try {
+            repo.deleteAllByEmail(email);
+            return true; // Return 'true' on successful deletion
+        } catch (Exception e) {
+            // Handle any exceptions that might occur during deletion
+            return false; // Return 'false' on deletion failure
+        }
     }
     public Set<UUID> setCustomersEbooks(String customerId, Set<UUID> customerEbookIds) {
         Customer customer = repo.findById(UUID.fromString(customerId)).orElseThrow(() -> {

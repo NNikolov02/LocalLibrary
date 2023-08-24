@@ -28,7 +28,7 @@ public class EBookUpdateRequest {
 
 
 
-
+    private  Integer numberOfCopies;
 
     private boolean isAccessed;
 }

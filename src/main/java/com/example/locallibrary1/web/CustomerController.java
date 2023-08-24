@@ -113,8 +113,16 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{customerEmail}")
-    public void deleteByEmail(String email){
-        customerService.deleteByEmail(email);
+    public ResponseEntity<String> deleteByEmail(String email){
+
+
+        boolean success = customerService.deleteByEmail(email);
+        if(success) {
+            return ResponseEntity.ok("Deleted");
+
+
+        }
+        return ResponseEntity.ok("Not Deleted");
     }
 
     @PostMapping("/registration")

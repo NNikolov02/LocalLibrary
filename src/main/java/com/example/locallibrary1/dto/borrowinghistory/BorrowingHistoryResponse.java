@@ -1,5 +1,6 @@
 package com.example.locallibrary1.dto.borrowinghistory;
 
+import com.example.locallibrary1.dto.EBookDto;
 import com.example.locallibrary1.model.Customer;
 import com.example.locallibrary1.model.EBook;
 import com.example.locallibrary1.model.PaperBook;
@@ -24,11 +25,11 @@ public class BorrowingHistoryResponse {
 
     private Set<String> customers;
 
-    private Set<String> eBooks;
+    private Set<String> ebooks;
 
     private Set<String> paperBooks;
 
     private LocalDate borrowDate;
     private LocalDate returnDate;
-    private int postponementDays;
+    private Long postponementDays;
 }

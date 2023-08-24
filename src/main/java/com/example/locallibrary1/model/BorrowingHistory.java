@@ -24,18 +24,19 @@ public class BorrowingHistory {
     @Setter(AccessLevel.NONE)
     @JsonProperty("id")
     private UUID id;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "borrowHistory_id_customer") // Specify a unique name for the join column
     @JsonIgnoreProperties("borrowHistory")
-    private Customer customer;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "EBook_id", referencedColumnName = "id")
+    private Set<Customer> customers;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "borrowHistory_id_ebook") // Specify a unique name for the join column
     @JsonIgnoreProperties("borrowHistory")
-    private EBook EBook;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "PaperBook_id", referencedColumnName = "id")
+    private Set<EBook> ebooks;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "borrowHistory_id_paperBook") // Specify a unique name for the join column
     @JsonIgnoreProperties("borrowHistory")
-    private PaperBook PaperBook;
+    private Set<PaperBook> paperBooks;
 
     private LocalDate borrowDate;
     private LocalDate returnDate;

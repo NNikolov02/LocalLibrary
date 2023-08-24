@@ -15,13 +15,21 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 @Mapper(uses = {EBookMapperDto.class, PaperBookMapperDto.class,CustomerMapperDto.class})
 public interface BorrowingHistoryMapper {
 
+
+
+
+
     BorrowingHistory modelFromCreateRequest(BorrowingHistoryCreateRequest borrowCreateDto);
 
+
     BorrowingHistoryResponse responseFromModel(BorrowingHistory borrowingHistory);
+
 
 
 

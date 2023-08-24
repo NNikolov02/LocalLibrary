@@ -48,8 +48,7 @@ public class PaperBook {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToOne(mappedBy = "PaperBook")
-    @JsonIgnoreProperties("PaperBook")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "borrowHistory_id")
     private BorrowingHistory borrowHistory;
-
 }
