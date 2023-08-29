@@ -1,32 +1,29 @@
 package com.example.locallibrary1.web;
 
-import com.example.locallibrary1.dto.BorrowRequest;
-import com.example.locallibrary1.dto.BorrowResponse;
-import com.example.locallibrary1.dto.ReturnRequest;
-import com.example.locallibrary1.dto.ReturnResponse;
+import com.example.locallibrary1.dto.borrowinghistory.BorrowRequest;
+import com.example.locallibrary1.dto.borrowinghistory.BorrowResponse;
+import com.example.locallibrary1.dto.borrowinghistory.ReturnRequest;
+import com.example.locallibrary1.dto.borrowinghistory.ReturnResponse;
 import com.example.locallibrary1.dto.borrowinghistory.BorrowingHistoryApiPage;
 import com.example.locallibrary1.dto.borrowinghistory.BorrowingHistoryCreateRequest;
 import com.example.locallibrary1.dto.borrowinghistory.BorrowingHistoryResponse;
-import com.example.locallibrary1.dto.customer.CustomerApiPage;
-import com.example.locallibrary1.dto.customer.CustomerEBookResponse;
-import com.example.locallibrary1.dto.customer.CustomerResponse;
-import com.example.locallibrary1.dto.customer.SetCustomerRequest;
-import com.example.locallibrary1.dto.ebook.SetEBookRequest;
-import com.example.locallibrary1.dto.paperbook.SetPaperBookRequest;
 import com.example.locallibrary1.error.InvalidObjectException;
 import com.example.locallibrary1.mapping.BorrowingHistoryMapper;
 import com.example.locallibrary1.model.BorrowingHistory;
+import com.example.locallibrary1.repository.VerificationTokenRepository;
 import com.example.locallibrary1.service.BorrowingHistoryService;
+import com.example.locallibrary1.service.ReturnNotificationService;
 import com.example.locallibrary1.validation.ObjectValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/library/history")
@@ -38,6 +35,12 @@ public class BorrowingHistoryController {
     private BorrowingHistoryMapper borrowingHistoryMapper;
     @Autowired
     private ObjectValidator validator;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+    @Autowired
+    private VerificationTokenRepository repository;
+    @Autowired
+    private ReturnNotificationService notificationService;
 
     @GetMapping(name = "", produces = "application/json")
     public BorrowingHistoryApiPage<BorrowingHistoryResponse> getAllHistory(
@@ -68,25 +71,33 @@ public class BorrowingHistoryController {
         return ResponseEntity.ok().body(borrowingHistoryResponse);
     }
     @PutMapping(value = "/{borrowHistoryId}/borrow")
-    public BorrowResponse setCustomersEbooksPaperBooks(@PathVariable String borrowHistoryId, @RequestBody BorrowRequest request) {
+    public BorrowResponse setCustomersEbooksPaperBooks(@PathVariable String borrowHistoryId, @RequestBody BorrowRequest request, HttpServletRequest request1, Errors errors) {
 
         String historyPaperBooks = borrowingHistoryService.setHistoryPaperBooks(borrowHistoryId,request.getSetPaperBooks());
         String historyEbooks= borrowingHistoryService.setHistoryEbooks(borrowHistoryId,request.getSetEBooks());
-        Set<UUID> historyCustomers = borrowingHistoryService.setHistoryCustomers(borrowHistoryId,request.getSetCustomers());
+        String historyCustomers = borrowingHistoryService.setHistoryCustomers(borrowHistoryId,request.getSetCustomers());
 
 
 
         BorrowResponse result = BorrowResponse.builder()
                 .paperBook(historyPaperBooks)
                 .eBook(historyEbooks)
-                .HistoryCustomerIds(historyCustomers)
+                .HistoryCustomers(historyCustomers)
                 .build();
+
+
+        String appUrl = request1.getContextPath();
+        eventPublisher.publishEvent(new OnRegistrationCompleteEventHistory(historyCustomers,
+                request1.getLocale(), appUrl));
+
+
+
 
         return result;
     }
 
     @PutMapping(value = "/{borrowHistoryId}/return")
-    public ReturnResponse setCustomersEbooksPaperBooks(@PathVariable String borrowHistoryId, @RequestBody ReturnRequest request) {
+    public ReturnResponse setCustomersEbooksPaperBooks(@PathVariable String borrowHistoryId, @RequestBody ReturnRequest request, HttpServletRequest request1, Errors errors) {
         String historyEbooks = borrowingHistoryService.returnEbooks(borrowHistoryId,request.getSetEBooks());
         String historyPaperBooks = borrowingHistoryService.returnPaperBooks(borrowHistoryId,request.getSetPaperBooks());
 
@@ -94,9 +105,21 @@ public class BorrowingHistoryController {
         ReturnResponse result = ReturnResponse.builder()
                 .paperBooks(historyPaperBooks)
                 .eBooks(historyEbooks)
+
                 .build();
+        String appUrl = request1.getContextPath();
+        eventPublisher.publishEvent(new OnRegistrationCompleteEventHistory(historyPaperBooks,
+                request1.getLocale(), appUrl));
+        eventPublisher.publishEvent(new OnRegistrationCompleteEventHistory(historyEbooks,
+                request1.getLocale(), appUrl));
 
         return result;
+    }
+    @PostMapping("/returnNotifications")
+    public ResponseEntity<String> triggerReturnNotifications() {
+
+        notificationService.sendOverdueReturnNotifications();
+        return ResponseEntity.ok("Return notifications triggered.");
     }
 
     @PostMapping("")

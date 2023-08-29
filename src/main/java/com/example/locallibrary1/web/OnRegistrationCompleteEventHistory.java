@@ -1,26 +1,22 @@
 package com.example.locallibrary1.web;
 
-import com.example.locallibrary1.dto.borrowinghistory.BorrowResponse;
-import com.example.locallibrary1.model.Customer;
 import org.springframework.context.ApplicationEvent;
 
 import java.util.Locale;
 
-
-
-public class OnRegistrationCompleteEvent extends ApplicationEvent {
+public class OnRegistrationCompleteEventHistory extends ApplicationEvent {
 
     private String appUrl;
     private Locale locale;
-    private Customer customer;
-    private BorrowResponse borrowResponse;
 
-    public OnRegistrationCompleteEvent(Customer customer, Locale locale, String appUrl) {
+    private String customer;
+
+    public OnRegistrationCompleteEventHistory(String customer, Locale locale, String appUrl) {
         super(customer);
         this.customer = customer;
         this.locale = locale;
         this.appUrl = appUrl;
-       // this.borrowResponse = borrowResponse;
+        // this.borrowResponse = borrowResponse;
     }
 
 
@@ -42,11 +38,12 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent {
         this.locale = locale;
     }
 
-    public Customer getCustomer() {
+    public String getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
+    public void setCustomer(String customer) {
         this.customer = customer;
     }
 }
+

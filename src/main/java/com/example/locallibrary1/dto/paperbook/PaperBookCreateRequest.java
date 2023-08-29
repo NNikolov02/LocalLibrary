@@ -20,7 +20,7 @@ public class PaperBookCreateRequest {
     private String ISBN;
 
 
-
+    private  Integer numberOfCopies;
 
 
     private Integer totalNumber;

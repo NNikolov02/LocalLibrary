@@ -1,5 +1,6 @@
 package com.example.locallibrary1.repository;
 
+import com.example.locallibrary1.model.Customer;
 import com.example.locallibrary1.model.PaperBook;
 import com.example.locallibrary1.model.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +15,7 @@ import java.util.UUID;
 public interface VerificationTokenRepository extends JpaRepository<VerificationToken, UUID> {
 
      Boolean existsByToken(String token);
+     VerificationToken findByCustomer(Customer customer);
 
 
 

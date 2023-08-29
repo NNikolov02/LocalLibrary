@@ -1,4 +1,4 @@
-package com.example.locallibrary1.dto;
+package com.example.locallibrary1.dto.borrowinghistory;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -10,7 +10,9 @@ import java.util.UUID;
 public class ReturnRequest {
 
     @NotNull
-    Set<UUID> setEBooks;
+    String setEBooks;
     @NotNull
-    Set<UUID>setPaperBooks;
+    String setPaperBooks;
+    @NotNull
+    String setCustomerName;
 }

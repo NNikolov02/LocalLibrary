@@ -129,13 +129,9 @@ public class CustomerController {
     public ResponseEntity<CustomerResponse> createUserAndRegister(
             @RequestBody @Valid CustomerCreateRequest customerDto,
             HttpServletRequest request, Errors errors) {
-        Map<String, String> validationErrors = validator.validate(customerDto);
-        if (validationErrors.size() != 0) {
-            throw new InvalidObjectException("Invalid Customer Create", validationErrors);
-        }
 
-        Customer create = customerMapper.modelFromCreateRequest(customerDto);
-        Customer saved = customerService.save(create);
+        //Customer create = customerMapper.modelFromCreateRequest(customerDto);
+        //Customer saved = customerService.save(create);
 
         Customer registered = customerService.registerNewCustomerAccount(customerDto);
 
@@ -143,7 +139,7 @@ public class CustomerController {
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered,
                 request.getLocale(), appUrl));
 
-        CustomerResponse customerResponse = customerMapper.responseFromModel(saved);
+        CustomerResponse customerResponse = customerMapper.responseFromModel(registered);
 
 
             return ResponseEntity.status(201).body(customerResponse);

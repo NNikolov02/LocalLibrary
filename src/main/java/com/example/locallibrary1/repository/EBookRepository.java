@@ -9,11 +9,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public interface EBookRepository extends CrudRepository<EBook, UUID> {
     EBook findByTitle(String title);
+    List<EBook> findAllByTitle(String title);
     List<EBook> findByGenre(String genre);
 
 

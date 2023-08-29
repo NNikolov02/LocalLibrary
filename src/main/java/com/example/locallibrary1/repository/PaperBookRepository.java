@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.UUID;
 import java.util.List;
 
@@ -16,6 +17,11 @@ import java.util.List;
 @Repository
 public interface PaperBookRepository extends JpaRepository<PaperBook, UUID> {
     PaperBook findByTitle(String title);
+
+
+    List<PaperBook> findAllByTitle(String title);
+
+
     List<PaperBook> findByGenre(String genre);
 
     @Query("SELECT p FROM PaperBook p JOIN p.authors a WHERE a.name = :authorName")

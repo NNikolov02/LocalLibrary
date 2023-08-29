@@ -9,6 +9,7 @@ import com.example.locallibrary1.model.Customer;
 import com.example.locallibrary1.model.EBook;
 import com.example.locallibrary1.model.PaperBook;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
@@ -41,6 +42,7 @@ public class BorrowingHistory {
     private LocalDate borrowDate;
     private LocalDate returnDate;
     private int postponementDays;
+    private BigDecimal fine;
 
 
 }

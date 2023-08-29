@@ -6,14 +6,14 @@ import com.example.locallibrary1.model.PaperBook;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public interface CustomerRepository extends CrudRepository<Customer, UUID> {
 
     Customer findCustomerByEmail(String email);
+    Customer findCustomerByName(String name);
+    List<Customer> findAllByName(String name);
     void deleteAllByEmail(String email);
     Optional<Customer> findByEmail(String email);
     //default ArrayList<Customer> borrow(PaperBook paperBook){

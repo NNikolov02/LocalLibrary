@@ -1,6 +1,7 @@
 package com.example.locallibrary1.service;
 
 import com.example.locallibrary1.dto.customer.CustomerCreateRequest;
+import com.example.locallibrary1.error.InvalidObjectException;
 import com.example.locallibrary1.error.NotFoundObjectException;
 import com.example.locallibrary1.model.Customer;
 import com.example.locallibrary1.model.EBook;
@@ -8,6 +9,7 @@ import com.example.locallibrary1.model.PaperBook;
 import com.example.locallibrary1.model.VerificationToken;
 import com.example.locallibrary1.registration.EmailPatternBuilder;
 import com.example.locallibrary1.repository.*;
+import com.example.locallibrary1.validation.ObjectValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +39,8 @@ public class CustomerService {
     private VerificationTokenRepository verificationTokenRepository;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private ObjectValidator validator;
 
 
     public Customer save(Customer customer){
@@ -85,9 +89,17 @@ public class CustomerService {
         return allEbookCustomerIds;
     }
     public Customer registerNewCustomerAccount(CustomerCreateRequest customerDto)  {
+        Map<String, String> validationErrors = validator.validate(customerDto);
+        if (validationErrors.size() != 0) {
+            throw new InvalidObjectException("Invalid Customer Create", validationErrors);
+        }
 
 
-        Customer customer = Customer.builder()
+       Customer customer = Customer.builder()
+                .age(customerDto.getAge())
+                .address(customerDto.getAddress())
+                .gender(customerDto.getGender())
+                .city(customerDto.getCity())
                 .name(customerDto.getName())
                 .country(customerDto.getCountry())
                 .email(customerDto.getEmail())

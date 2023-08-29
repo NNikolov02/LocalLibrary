@@ -1,6 +1,5 @@
 package com.example.locallibrary1.service;
 
-import com.example.locallibrary1.dto.BorrowRequest;
 import com.example.locallibrary1.error.NotFoundObjectException;
 import com.example.locallibrary1.model.*;
 import com.example.locallibrary1.repository.*;
@@ -9,10 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -32,21 +31,26 @@ public class BorrowingHistoryService {
     private BorrowingHistoryRepository repo;
     @Autowired
     private BorrowingHistoryPagingRepository pagingRepo;
+    @Autowired
+    private VerificationTokenRepository verificationTokenRepository;
+    @Autowired
+    private EmailService emailService;
 
-    public BorrowingHistory save(BorrowingHistory borrowingHistory){
+    public BorrowingHistory save(BorrowingHistory borrowingHistory) {
         return repo.save(borrowingHistory);
     }
 
     public Page<BorrowingHistory> fetchAll(int currentPage, int pageSize) {
         return pagingRepo.findAll(PageRequest.of(currentPage, pageSize));
     }
+
     public BorrowingHistory findById(String historyId) {
         return repo.findById(UUID.fromString(historyId)).orElseThrow(() -> {
             throw new NotFoundObjectException("History Not Found", BorrowingHistory.class.getName(), historyId);
         });
     }
 
-    public void borrowForPaperBooks(String paperBooksTitle,String customerEmail ) {
+    public void borrowForPaperBooks(String paperBooksTitle, String customerEmail) {
         PaperBook paperBook = paperBookRepo.findByTitle(paperBooksTitle);
         Customer customer = customerRepo.findCustomerByEmail(customerEmail);
 
@@ -55,19 +59,19 @@ public class BorrowingHistoryService {
             paperBook.setNumberOfCopies(paperBook.getNumberOfCopies() - 1);
             paperBookRepo.save(paperBook);
             //BorrowingHistory history = BorrowingHistory
-                    //.builder()
-                    //.PaperBook(paperBook)
-                    //.customer(customer)
-                    //.borrowDate(LocalDate.now())
-                    //.postponementDays(14)
-                    //.build();
-
+            //.builder()
+            //.PaperBook(paperBook)
+            //.customer(customer)
+            //.borrowDate(LocalDate.now())
+            //.postponementDays(14)
+            //.build();
 
 
         }
 
 
     }
+
     public ResponseEntity<String> borrowForEbooks(String customerId, String eBookId) {
         try {
 
@@ -85,11 +89,11 @@ public class BorrowingHistoryService {
                 eBookRepo.save(eBook);
 
                 //BorrowingHistory history = BorrowingHistory.builder()
-                        //.EBook(eBook)
-                        //.customer(customer)
-                        //.borrowDate(LocalDate.now())
-                        //.postponementDays(14)
-                        //.build();
+                //.EBook(eBook)
+                //.customer(customer)
+                //.borrowDate(LocalDate.now())
+                //.postponementDays(14)
+                //.build();
 
                 // You can customize the success message here
                 String successMessage = "Book borrowed successfully.";
@@ -108,18 +112,19 @@ public class BorrowingHistoryService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-    public String setHistoryEbooks(String borrowHistoryId, Set<UUID> historyEbookIds) {
-        BorrowingHistory borrowingHistory= repo.findById(UUID.fromString(borrowHistoryId)).orElseThrow(() -> {
-            throw new NotFoundObjectException("History Not Found",BorrowingHistory.class.getName(), borrowHistoryId);
+
+    public String setHistoryEbooks(String borrowHistoryId, String title) {
+        BorrowingHistory borrowingHistory = repo.findById(UUID.fromString(borrowHistoryId)).orElseThrow(() -> {
+            throw new NotFoundObjectException("History Not Found", BorrowingHistory.class.getName(), borrowHistoryId);
         });
 
         List<EBook> allAuthorEbooks =
-                (List<EBook>) eBookRepo.findAllById(historyEbookIds);
-        for(EBook eBook:allAuthorEbooks){
+                (List<EBook>) eBookRepo.findAllByTitle(title);
+        for (EBook eBook : allAuthorEbooks) {
             if (eBook.getNumberOfCopies() > 0) {
                 eBook.setNumberOfCopies(eBook.getNumberOfCopies() - 1);
                 eBookRepo.save(eBook);
-            }else{
+            } else {
 
             }
         }
@@ -127,23 +132,24 @@ public class BorrowingHistoryService {
         borrowingHistory.setEbooks(new HashSet<>(allAuthorEbooks));
         BorrowingHistory savedHistory = repo.save(borrowingHistory);
 
-       // Set<UUID> allEbookCustomerIds = new HashSet<>();
+        // Set<UUID> allEbookCustomerIds = new HashSet<>();
         //for (EBook eBook : savedHistory.getEbooks()) {
 
-            //allEbookCustomerIds.add(eBook.getId());
+        //allEbookCustomerIds.add(eBook.getId());
 
         //}
 
         return "Ebooks is  borrowed!";
     }
-    public String setHistoryPaperBooks(String borrowHistoryId, Set<UUID> historypaperBooksIds) {
+
+    public String setHistoryPaperBooks(String borrowHistoryId, String title) {
         BorrowingHistory borrowingHistory = repo.findById(UUID.fromString(borrowHistoryId)).orElseThrow(() -> {
             throw new NotFoundObjectException("History Not Found", BorrowingHistory.class.getName(), borrowHistoryId);
         });
 
         List<PaperBook> paperBooks =
-                (List<PaperBook>) paperBookRepo.findAllById(historypaperBooksIds);
-        for(PaperBook paperBook:paperBooks){
+                (List<PaperBook>) paperBookRepo.findAllByTitle(title);
+        for (PaperBook paperBook : paperBooks) {
             if (paperBook.getNumberOfCopies() > 0) {
                 paperBook.setNumberOfCopies(paperBook.getNumberOfCopies() - 1);
                 paperBookRepo.save(paperBook);
@@ -155,29 +161,66 @@ public class BorrowingHistoryService {
 
         //Set<UUID> allEbookCustomerIds = new HashSet<>();
         //for (PaperBook paperBook : savedHistory.getPaperBooks()) {
-            //allEbookCustomerIds.add(paperBook.getId());
+        //allEbookCustomerIds.add(paperBook.getId());
         //}
         return "PaperBook is borrowed!";
     }
-        public Set<UUID> setHistoryCustomers(String borrowHistoryId, Set<UUID> historyCustomersIds) {
-            BorrowingHistory borrowingHistory= repo.findById(UUID.fromString(borrowHistoryId)).orElseThrow(() -> {
-                throw new NotFoundObjectException("History Not Found",BorrowingHistory.class.getName(), borrowHistoryId);
-            });
 
-            List<Customer> customers =
-                    (List<Customer>) customerRepo.findAllById(historyCustomersIds);
-            borrowingHistory.setCustomers(new HashSet<>(customers));
-            BorrowingHistory savedHistory = repo.save(borrowingHistory);
+    public String setHistoryCustomers(String borrowHistoryId, String name) {
+        BorrowingHistory borrowingHistory = repo.findById(UUID.fromString(borrowHistoryId)).orElseThrow(() -> {
+            throw new NotFoundObjectException("History Not Found", BorrowingHistory.class.getName(), borrowHistoryId);
+        });
+        //List<String> emailList = Arrays.asList(email.split(","));
 
-            Set<UUID> allEbookCustomerIds = new HashSet<>();
-            for (Customer customer : savedHistory.getCustomers()) {
-                allEbookCustomerIds.add(customer.getId());
+        List<Customer> customers =
+                (List<Customer>) customerRepo.findAllByName(name);
+        borrowingHistory.setCustomers(new HashSet<>(customers));
+        BorrowingHistory savedHistory = repo.save(borrowingHistory);
+
+        for (Customer customer : customers) {
+            customer = customerRepo.findCustomerByName(name);
+            VerificationToken existingToken = verificationTokenRepository.findByCustomer(customer);
+
+            if (existingToken != null) {
+                String token = existingToken.getToken();
+
+                String confirmationUrl = "http://localhost:8084/library/history/" + borrowHistoryId;
+                String message = "Thank you for borrowing. Please click on the link below to see your borrow:\n"
+                        + confirmationUrl;
+
+                emailService.sendSimpleMessage(customer.getEmail(), "Borrowing Confirmation", message);
+            } else {
+                // If no existing token is found, you can create a new one
+                String token = UUID.randomUUID().toString();
+
+                VerificationToken verificationToken = VerificationToken.builder()
+                        .token(token)
+                        .customer(customer)
+                        .expiryDate(calculateExpiryDate(24 * 60)) // 24 hours expiration
+                        .build();
+
+                verificationTokenRepository.save(verificationToken);
+
+                String confirmationUrl = "http://localhost:8084/library/history/" + borrowHistoryId ;
+                String message = "Thank you for borrowing. Please click on the link below to see your borrow:\n"
+                        + confirmationUrl;
+
+                emailService.sendSimpleMessage(customer.getEmail(), "Borrowing Confirmation", message);
             }
+        }
+
+            //Set<UUID> allEbookCustomerIds = new HashSet<>();
+            // for (Customer customer : savedHistory.getCustomers()) {
+            //allEbookCustomerIds.add(customer.getId());
+            //}
 
 
-        return allEbookCustomerIds;
-    }
-    public String returnEbooks(String borrowHistoryId,Set<UUID> historyEbookIds){
+            return "Customer is online!";
+        }
+
+
+
+    public String returnEbooks(String borrowHistoryId,String title){
         BorrowingHistory borrowingHistory= repo.findById(UUID.fromString(borrowHistoryId)).orElseThrow(() -> {
             throw new NotFoundObjectException("History Not Found",BorrowingHistory.class.getName(), borrowHistoryId);
         });
@@ -185,15 +228,52 @@ public class BorrowingHistoryService {
         if(currentDate.isEqual(borrowingHistory.getReturnDate())) {
 
         List<EBook> allAuthorEbooks =
-                (List<EBook>) eBookRepo.findAllById(historyEbookIds);
+                (List<EBook>) eBookRepo.findAllByTitle(title);
+            Set<Customer> customers = borrowingHistory.getCustomers();
 
             for (EBook eBook : allAuthorEbooks) {
 
-                eBook.setNumberOfCopies(eBook.getNumberOfCopies() + 1);
-                eBookRepo.save(eBook);
 
+
+                Integer numberOfCopies = eBook.getNumberOfCopies();
+                if (numberOfCopies != null) {
+                    eBook.setNumberOfCopies(eBook.getNumberOfCopies() + 1);
+                    eBookRepo.save(eBook);
+                }
 
             }
+            for (Customer customer:customers) {
+
+                VerificationToken existingToken = verificationTokenRepository.findByCustomer(customer);
+
+                if (existingToken != null) {
+                    String token = existingToken.getToken();
+
+                    String confirmationUrl = "http://localhost:8084/library/history/" + borrowHistoryId;
+                    String message = "Thank you for returning. Please click on the link below to see your return:\n"
+                            + confirmationUrl;
+
+                    emailService.sendSimpleMessage(customer.getEmail(), "Return Confirmation", message);
+                } else {
+                    // If no existing token is found, you can create a new one
+                    String token = UUID.randomUUID().toString();
+
+                    VerificationToken verificationToken = VerificationToken.builder()
+                            .token(token)
+                            .customer(customer)
+                            .expiryDate(calculateExpiryDate(24 * 60)) // 24 hours expiration
+                            .build();
+
+                    verificationTokenRepository.save(verificationToken);
+
+                    String confirmationUrl = "http://localhost:8084/library/history/" + borrowHistoryId;
+                    String message = "Thank you for returning. Please click on the link below to see your return:\n"
+                            + confirmationUrl;
+
+                    emailService.sendSimpleMessage(customer.getEmail(), "Return Confirmation", message);
+                }
+            }
+
 
 
             borrowingHistory.setEbooks(null);
@@ -212,7 +292,7 @@ public class BorrowingHistoryService {
         return "The Ebook cannot yet be  returned";
 
     }
-    public String returnPaperBooks(String borrowHistoryId, Set<UUID> historypaperBooksIds) {
+    public String returnPaperBooks(String borrowHistoryId, String title) {
         BorrowingHistory borrowingHistory = repo.findById(UUID.fromString(borrowHistoryId)).orElseThrow(() -> {
             throw new NotFoundObjectException("History Not Found", BorrowingHistory.class.getName(), borrowHistoryId);
         });
@@ -221,25 +301,63 @@ public class BorrowingHistoryService {
 
 
         List<PaperBook> paperBooks =
-                (List<PaperBook>) paperBookRepo.findAllById(historypaperBooksIds);
+                (List<PaperBook>) paperBookRepo.findAllByTitle(title);
+            Set<Customer> customers = borrowingHistory.getCustomers();
+
+
+
+
 
             for (PaperBook paperBook : paperBooks) {
-
-                paperBook.setNumberOfCopies(paperBook.getNumberOfCopies() + 1);
+            Integer numberOfCopies = paperBook.getNumberOfCopies();
+            if (numberOfCopies != null) {
+                paperBook.setNumberOfCopies(numberOfCopies + 1);
                 paperBookRepo.save(paperBook);
+            }
+        }
+            for (Customer customer:customers) {
 
+                VerificationToken existingToken = verificationTokenRepository.findByCustomer(customer);
+
+                if (existingToken != null) {
+                    String token = existingToken.getToken();
+
+                    String confirmationUrl = "http://localhost:8084/library/history/" + borrowHistoryId;
+                    String message = "Thank you for returning. Please click on the link below to see your return:\n"
+                            + confirmationUrl;
+
+                    emailService.sendSimpleMessage(customer.getEmail(), "Return Confirmation", message);
+                } else {
+                    // If no existing token is found, you can create a new one
+                    String token = UUID.randomUUID().toString();
+
+                    VerificationToken verificationToken = VerificationToken.builder()
+                            .token(token)
+                            .customer(customer)
+                            .expiryDate(calculateExpiryDate(24 * 60)) // 24 hours expiration
+                            .build();
+
+                    verificationTokenRepository.save(verificationToken);
+
+                    String confirmationUrl = "http://localhost:8084/library/history/" + borrowHistoryId;
+                    String message = "Thank you for returning. Please click on the link below to see your return:\n"
+                            + confirmationUrl;
+
+                    emailService.sendSimpleMessage(customer.getEmail(), "Return Confirmation", message);
+                }
             }
 
             borrowingHistory.setPaperBooks(null);
             BorrowingHistory savedHistory = repo.save(borrowingHistory);
 
             return "The PaperBook is returned";
-        }
+
 
        // Set<UUID> allEbookCustomerIds = new HashSet<>();
         //for (PaperBook paperBook : savedHistory.getPaperBooks()) {
            // allEbookCustomerIds.add(paperBook.getId());
-       // }
+        }
+
         return "The PaperBook cannot yet be returned";
     }
 
@@ -289,6 +407,14 @@ public class BorrowingHistoryService {
 
         return  allIds;
     }
+
+    private Date calculateExpiryDate(int expiryTimeInMinutes) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Timestamp(cal.getTime().getTime()));
+        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
+        return new Date(cal.getTime().getTime());
+    }
+
 
 
 

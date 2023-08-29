@@ -1,4 +1,4 @@
-package com.example.locallibrary1.dto;
+package com.example.locallibrary1.dto.borrowinghistory;
 
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.UUID;
 @Builder
 public class BorrowResponse {
     private String eBook;
-    private Set<UUID> HistoryCustomerIds;
+    private String HistoryCustomers;
     private String paperBook;
 
 }

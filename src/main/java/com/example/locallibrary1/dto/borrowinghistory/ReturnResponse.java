@@ -1,4 +1,4 @@
-package com.example.locallibrary1.dto;
+package com.example.locallibrary1.dto.borrowinghistory;
 
 import lombok.Builder;
 import lombok.Data;
@@ -8,4 +8,6 @@ import lombok.Data;
 public class ReturnResponse {
     private  String eBooks;
     private String paperBooks;
+
+
 }
